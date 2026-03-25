@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 
 import Header from "../components/Header.jsx";
 import StudentTable from "../components/StudentTable.jsx";
 import StudentModal from "../components/StudentModal.jsx";
+
+import {
+  getStudents,
+  createStudent,
+  updateStudent,
+  deleteStudent,
+} from "../services/studentService.jsx";
 
 function Dashboard() {
   const [showModal, setShowModal] = useState(false);
@@ -18,9 +24,9 @@ function Dashboard() {
     course: "",
   });
 
-  // ✅ FETCH
+  // FETCH
   const fetchStudents = async () => {
-    const res = await axios.get("http://localhost:5000/api/students");
+    const res = await getStudents();
     setStudents(res.data);
   };
 
@@ -36,15 +42,9 @@ function Dashboard() {
   // SAVE
   const handleSave = async () => {
     if (editId) {
-      await axios.put(
-        `http://localhost:5000/api/students/${editId}`,
-        formData
-      );
+      await updateStudent(editId, formData);
     } else {
-      await axios.post(
-        "http://localhost:5000/api/students",
-        formData
-      );
+      await createStudent(formData);
     }
 
     fetchStudents();
@@ -61,7 +61,7 @@ function Dashboard() {
 
   // DELETE
   const handleDelete = async (id) => {
-    await axios.delete(`http://localhost:5000/api/students/${id}`);
+    await deleteStudent(id);
     fetchStudents();
   };
 
@@ -84,7 +84,7 @@ function Dashboard() {
   // DELETE SELECTED
   const handleDeleteSelected = async () => {
     for (let id of selected) {
-      await axios.delete(`http://localhost:5000/api/students/${id}`);
+      await deleteStudent(id);
     }
     setSelected([]);
     fetchStudents();
